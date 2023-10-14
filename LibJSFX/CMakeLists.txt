@@ -1,6 +1,6 @@
 add_library(
     lib_jsfx STATIC
-    ./src/test.cpp
+    ./src/FIFOBuffer.cpp
 )
 
 target_include_directories(

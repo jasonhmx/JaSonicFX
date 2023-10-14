@@ -1,5 +1,5 @@
-#include "test.h"
+#include "FIFOBuffer.h"
 int main(){
-    test_output();
+    
     return 0;
 }

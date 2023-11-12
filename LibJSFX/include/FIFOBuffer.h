@@ -13,8 +13,8 @@ namespace Util {
  * @tparam capacity: the capacity of the buffer, needs to be a power of 2
  */
 template <typename T, size_t capacity> class FIFOBuffer {
-  static_assert((capacity > 0) && (capacity && (capacity - 1)) == 0,
-                "Buffer size needs to be a power of 2");
+  static_assert((capacity > 0) && ((capacity & (capacity - 1)) == 0),
+                "Buffer capacity needs to be a power of 2");
 
 private:
   std::array<T, capacity> buffer;
@@ -24,7 +24,7 @@ private:
 
 public:
   FIFOBuffer() : sizeMask(capacity - 1), writeIdx(0), size(0) {}
-  size_t size() { return capacity; }
+  size_t getSize() { return size; }
   /**
    * @brief Writes samples into circular buffer.
    * Note that it Keeps overwriting if buffer is full.

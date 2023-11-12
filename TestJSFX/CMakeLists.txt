@@ -1,8 +1,7 @@
 add_executable(
     test_jsfx
-    main.cpp
 
-    src/TestFIFOBuffer.cpp
+    src/TestJSFX.cpp
 )
 
 target_link_libraries(

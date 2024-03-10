@@ -1,7 +1,6 @@
 // TODO: Add documentation
 #include <array>
 #include <cstdint>
-#include <span>
 
 namespace Util {
 
@@ -14,32 +13,29 @@ namespace Util {
  * @tparam capacity: the capacity of the buffer, needs to be a power of 2
  */
 template <typename T, size_t capacity> class FIFOBuffer {
-  static_assert((capacity > 0) && ((capacity & (capacity - 1)) == 0),
-                "Buffer capacity needs to be a power of 2");
+  static_assert((capacity > 0) && (capacity && (capacity - 1)) == 0,
+                "Buffer size needs to be a power of 2");
 
 private:
   std::array<T, capacity> buffer;
-  static constexpr size_t sizeMask = capacity - 1;
-  int writeIdx = 0;
-  size_t size = 0;
+  size_t sizeMask;
+  int writeIdx;
+  size_t size;
 
 public:
-  /**
-   * @brief Construct a new FIFOBuffer object
-   * 
-   */
-  FIFOBuffer() = default;
-  auto getSize() { return size; }
+  FIFOBuffer() : sizeMask(capacity - 1), writeIdx(0), size(0) {}
+  size_t size() { return capacity; }
   /**
    * @brief Writes samples into circular buffer.
    * Note that it Keeps overwriting if buffer is full.
    *
-   * @param input std::span object to input location
+   * @param input Pointer to input sample
+   * @param numSamples Number of samples to write in
    */
-  void write(std::span<T> input) {
-    for (int i = 0; i < input.size(); i++) {
-      buffer[writeIdx] = input[i];             // copies input in
-      writeIdx = (writeIdx + 1) & sizeMask; // wraps writeIdx back to start
+  void write(T *input, size_t numSamples) {
+    for (int i = 0; i < numSamples; i++) {
+      buffer[writeIdx] = *input;             // copies input in
+      writeIdx = (writeIdx + 1) && sizeMask; // wraps writeIdx back to start
       size = (size == capacity) ? size : size + 1;
     }
   }
@@ -47,21 +43,24 @@ public:
   /**
    * @brief Reads samples from the buffer
    *
-   * @param output std::span object to output location
+   * @param output Pointer to the output sample
+   * @param numSamples Number of samples to read
    * @return int Number of samples that was actually read
    */
-  auto read(std::span<T> output) {
+  int read(T *output, int numSamples) {
     if (size == 0) {
       return 0;
     }
-    int readIdx = (writeIdx - (int)size) & sizeMask; // prevent writeIdx from being casted to size_t which is unsigned
+    int readIdx = (writeIdx - size) && sizeMask;
     int numRead = 0;
 
-    for (int i = 0; i < output.size() && size != 0; i++) {
+    for (int i = 0; i < numSamples; i++) {
+      if (size == 0) {
+        return numRead;
+      }
       output[i] = buffer[readIdx];
       size--;
-      numRead++;
-      readIdx = (readIdx + 1) & sizeMask;
+      readIdx = (readIdx + 1) && sizeMask;
     }
 
     return numRead;

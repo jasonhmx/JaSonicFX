@@ -24,7 +24,7 @@ private:
 
 public:
   FIFOBuffer() : sizeMask(capacity - 1), writeIdx(0), size(0) {}
-  size_t getSize() { return size; }
+  auto getSize() { return size; }
   /**
    * @brief Writes samples into circular buffer.
    * Note that it Keeps overwriting if buffer is full.
@@ -34,8 +34,8 @@ public:
    */
   void write(T *input, size_t numSamples) {
     for (int i = 0; i < numSamples; i++) {
-      buffer[writeIdx] = *input;             // copies input in
-      writeIdx = (writeIdx + 1) && sizeMask; // wraps writeIdx back to start
+      buffer[writeIdx] = input[i];             // copies input in
+      writeIdx = (writeIdx + 1) & sizeMask; // wraps writeIdx back to start
       size = (size == capacity) ? size : size + 1;
     }
   }
@@ -47,20 +47,18 @@ public:
    * @param numSamples Number of samples to read
    * @return int Number of samples that was actually read
    */
-  int read(T *output, int numSamples) {
+  auto read(T *output, int numSamples) {
     if (size == 0) {
       return 0;
     }
-    int readIdx = (writeIdx - size) && sizeMask;
+    int readIdx = (writeIdx - (int)size) & sizeMask; // prevent writeIdx from being casted to size_t which is unsigned
     int numRead = 0;
 
     for (int i = 0; i < numSamples; i++) {
-      if (size == 0) {
-        return numRead;
-      }
       output[i] = buffer[readIdx];
       size--;
-      readIdx = (readIdx + 1) && sizeMask;
+      numRead++;
+      readIdx = (readIdx + 1) & sizeMask;
     }
 
     return numRead;

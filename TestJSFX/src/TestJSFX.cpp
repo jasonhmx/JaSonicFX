@@ -8,10 +8,11 @@ TEST(FIFOBufferTest, WriteAndRead) {
 
   // Test writing and reading within bounds
   int writeArray[] = {1, 2, 3, 4};
-  buffer.write(writeArray, 4);
+  // list initialise a span
+  buffer.write({writeArray});
 
   int readData[4];
-  int numRead = buffer.read(readData, 4);
+  int numRead = buffer.read({readData});
 
   EXPECT_EQ(numRead, 4);
   for (int i = 0; i < 4; ++i) {
@@ -20,10 +21,10 @@ TEST(FIFOBufferTest, WriteAndRead) {
 
   // Test writing and reading that wraps around
   int writeArrayWrap[] = {5, 6, 7};
-  buffer.write(writeArrayWrap, 3);
+  buffer.write({writeArrayWrap});
 
   int readDataWrap[3];
-  numRead = buffer.read(readDataWrap, 3);
+  numRead = buffer.read({readDataWrap});
 
   EXPECT_EQ(numRead, 3);
   EXPECT_EQ(readDataWrap[0], 5);

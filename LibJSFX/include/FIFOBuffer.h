@@ -1,6 +1,7 @@
 // TODO: Add documentation
 #include <array>
 #include <cstdint>
+#include <span>
 
 namespace Util {
 
@@ -23,17 +24,20 @@ private:
   size_t size;
 
 public:
+  /**
+   * @brief Construct a new FIFOBuffer object
+   * 
+   */
   FIFOBuffer() : sizeMask(capacity - 1), writeIdx(0), size(0) {}
   auto getSize() { return size; }
   /**
    * @brief Writes samples into circular buffer.
    * Note that it Keeps overwriting if buffer is full.
    *
-   * @param input Pointer to input sample
-   * @param numSamples Number of samples to write in
+   * @param input std::span object to input location
    */
-  void write(T *input, size_t numSamples) {
-    for (int i = 0; i < numSamples; i++) {
+  void write(std::span<T> input) {
+    for (int i = 0; i < input.size(); i++) {
       buffer[writeIdx] = input[i];             // copies input in
       writeIdx = (writeIdx + 1) & sizeMask; // wraps writeIdx back to start
       size = (size == capacity) ? size : size + 1;
@@ -43,18 +47,17 @@ public:
   /**
    * @brief Reads samples from the buffer
    *
-   * @param output Pointer to the output sample
-   * @param numSamples Number of samples to read
+   * @param output std::span object to output location
    * @return int Number of samples that was actually read
    */
-  auto read(T *output, int numSamples) {
+  auto read(std::span<T> output) {
     if (size == 0) {
       return 0;
     }
     int readIdx = (writeIdx - (int)size) & sizeMask; // prevent writeIdx from being casted to size_t which is unsigned
     int numRead = 0;
 
-    for (int i = 0; i < numSamples; i++) {
+    for (int i = 0; i < output.size() && size != 0; i++) {
       output[i] = buffer[readIdx];
       size--;
       numRead++;

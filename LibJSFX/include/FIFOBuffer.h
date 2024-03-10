@@ -19,16 +19,16 @@ template <typename T, size_t capacity> class FIFOBuffer {
 
 private:
   std::array<T, capacity> buffer;
-  size_t sizeMask;
-  int writeIdx;
-  size_t size;
+  static constexpr size_t sizeMask = capacity - 1;
+  int writeIdx = 0;
+  size_t size = 0;
 
 public:
   /**
    * @brief Construct a new FIFOBuffer object
    * 
    */
-  FIFOBuffer() : sizeMask(capacity - 1), writeIdx(0), size(0) {}
+  FIFOBuffer() = default;
   auto getSize() { return size; }
   /**
    * @brief Writes samples into circular buffer.

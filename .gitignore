@@ -33,3 +33,6 @@
 
 # cmake build files
 build/
+
+# visual studio folder
+.vs/

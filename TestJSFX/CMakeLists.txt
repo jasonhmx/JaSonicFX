@@ -9,3 +9,6 @@ target_link_libraries(
     lib_jsfx
     GTest::gtest_main
 )
+
+include(GoogleTest)
+gtest_discover_tests(test_jsfx)

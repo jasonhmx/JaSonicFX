@@ -2,6 +2,8 @@
 #include <numeric>
 #include <algorithm>
 
+using namespace dsp::floatingPoint;
+
 template <std::floating_point FloatType>
 FIRFilter<FloatType>::FIRFilter(std::vector<FloatType> coeffs)
 {

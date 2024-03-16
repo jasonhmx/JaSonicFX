@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <span>
 
-namespace Util {
+namespace util {
 
 // TODO: write a dynamic buffer on the heap with resize()
 

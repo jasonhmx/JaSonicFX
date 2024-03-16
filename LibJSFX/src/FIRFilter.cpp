@@ -1,5 +1,6 @@
 #include <FIRFilter.h>
 #include <numeric>
+#include <algorithm>
 
 template <std::floating_point FloatType>
 FIRFilter<FloatType>::FIRFilter(std::vector<FloatType> coeffs)
@@ -54,6 +55,14 @@ template <std::floating_point FloatType>
 bool FIRFilter<FloatType>::empty()
 {
     return numRemainingSamples == 0;
+}
+
+template <std::floating_point FloatType>
+void FIRFilter<FloatType>::reset()
+{
+    std::ranges::fill(buffer, 0.0);
+    index = sizeMask;
+    numRemainingSamples = numCoeffs - 1;
 }
 
 template class FIRFilter<float>;

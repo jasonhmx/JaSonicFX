@@ -67,5 +67,5 @@ void FIRFilter<FloatType>::reset()
     numRemainingSamples = numCoeffs - 1;
 }
 
-template class FIRFilter<float>;
-template class FIRFilter<double>;
+template class dsp::floatingPoint::FIRFilter<float>;
+template class dsp::floatingPoint::FIRFilter<double>;

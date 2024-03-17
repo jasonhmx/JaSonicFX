@@ -36,3 +36,6 @@ build/
 
 # visual studio folder
 .vs/
+
+# vscode cache
+.cache/

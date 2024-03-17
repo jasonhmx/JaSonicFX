@@ -1,6 +1,5 @@
 // TODO: Add documentation
 #include <array>
-#include <cstdint>
 #include <span>
 
 namespace util {

@@ -44,6 +44,9 @@ IIRFilter<FloatType>::IIRFilter(FilterCoeffs<FloatType> coeffs)
 template <std::floating_point FloatType>
 void dsp::floatingPoint::IIRFilter<FloatType>::process(const std::span<FloatType> input, std::span<FloatType> output)
 {
+    if (empty()){
+        numRemainingSamples = numCoeffs - 1;
+    }
     for (int i = 0; i < input.size(); i++)
     {
         process(input[i], output[i]);
@@ -65,12 +68,21 @@ void dsp::floatingPoint::IIRFilter<FloatType>::process(const FloatType& input, F
 template <std::floating_point FloatType>
 void dsp::floatingPoint::IIRFilter<FloatType>::flush(int numSamples, std::span<FloatType> output)
 {
+    if (empty()){
+        return;
+    }
+    for (int i = 0; i < numSamples && numRemainingSamples > 0; i++)
+    {
+        // write 0 to flush out remaining values
+        process(0.0, output[i]);
+        numRemainingSamples--;
+    }
 }
 
 template <std::floating_point FloatType>
 auto dsp::floatingPoint::IIRFilter<FloatType>::empty() const -> bool
 {
-    return false;
+    return numRemainingSamples == 0;
 }
 
 template class dsp::floatingPoint::FilterCoeffs<float>;

@@ -11,7 +11,7 @@ FIRFilter<FloatType>::FIRFilter(std::vector<FloatType> coeffs)
     numCoeffs = filterCoeffs.size();
     numRemainingSamples = numCoeffs - 1;
     int halfBufferSize = 1;
-    for (int temp = numCoeffs; temp > 0; temp >>=1){
+    for (int temp = numCoeffs - 1; temp > 0; temp >>=1){
         halfBufferSize <<= 1;
     }
     buffer.resize(halfBufferSize << 1, 0);

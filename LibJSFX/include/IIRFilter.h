@@ -34,7 +34,9 @@ namespace dsp::floatingPoint {
     public:
         IIRFilter(FilterCoeffs<FloatType> coeffs);
 
-        void process(std::span<FloatType> input, std::span<FloatType> output) const;
+        void process(const std::span<FloatType> input, std::span<FloatType> output);
+
+        void process(const FloatType& input, FloatType& output);
 
         void flush(int numSamples, std::span<FloatType> output);
 

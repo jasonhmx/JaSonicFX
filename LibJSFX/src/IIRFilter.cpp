@@ -1,5 +1,7 @@
 #include "IIRFilter.h"
 #include <limits>
+#include <algorithm>
+#include <numeric>
 
 using namespace dsp::floatingPoint;
 
@@ -14,11 +16,11 @@ IIRFilter<FloatType>::IIRFilter(FilterCoeffs<FloatType> coeffs)
     if (std::abs(a_k[0] - 1.0) > std::numeric_limits<FloatType>::epsilon())
     {
         FloatType div = a_k[0];
-        for (auto& i : a_k)
+        for (auto &i : a_k)
         {
             i = i / div;
         }
-        for (auto& i : b_k)
+        for (auto &i : b_k)
         {
             i = i / div;
         }
@@ -30,7 +32,8 @@ IIRFilter<FloatType>::IIRFilter(FilterCoeffs<FloatType> coeffs)
 
     // allocate state buffer for w_n
     int halfBufferSize = 1;
-    for (int temp = numCoeffs - 1; temp > 0; temp >>=1){
+    for (int temp = numCoeffs - 1; temp > 0; temp >>= 1)
+    {
         halfBufferSize <<= 1;
     }
     buffer.resize(halfBufferSize << 1, 0);
@@ -39,9 +42,24 @@ IIRFilter<FloatType>::IIRFilter(FilterCoeffs<FloatType> coeffs)
 }
 
 template <std::floating_point FloatType>
-void dsp::floatingPoint::IIRFilter<FloatType>::process(std::span<FloatType> input, std::span<FloatType> output) const
+void dsp::floatingPoint::IIRFilter<FloatType>::process(const std::span<FloatType> input, std::span<FloatType> output)
 {
+    for (int i = 0; i < input.size(); i++)
+    {
+        process(input[i], output[i]);
+    }
+}
 
+template <std::floating_point FloatType>
+void dsp::floatingPoint::IIRFilter<FloatType>::process(const FloatType& input, FloatType &output)
+{
+    // w[n] = x[n] - \sum_{k=1}^{N} a[k]w[n-k]
+    buffer[index] = input - std::inner_product(a_k.begin() + 1, a_k.end(), buffer.begin() + index + 1, 0.0);
+    buffer[index + buffer.size() / 2] = buffer[index];
+    // y[n] = \sum{k=0}^M b[k]w[n-k]
+    output = std::inner_product(b_k.begin(), b_k.end(), buffer.begin() + index, 0.0);
+    // update index
+    index = (index - 1) & sizeMask;
 }
 
 template <std::floating_point FloatType>

@@ -6,6 +6,7 @@ add_executable(
 target_link_libraries(
     command_line_jsfx PRIVATE
     lib_jsfx
+    pugixml
 )
 
 target_include_directories(

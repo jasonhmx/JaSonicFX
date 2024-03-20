@@ -7,6 +7,7 @@ enable_testing()
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+add_subdirectory(extern)
 add_subdirectory(LibJSFX)
 add_subdirectory(TestJSFX)
 add_subdirectory(CommandLineJSFX)

@@ -1,5 +1,6 @@
 #include "CLI11.hpp"
 #include "FIRFilter.h"
+#include "pugixml.hpp"
 
 int main(int argc, char** argv)
 {

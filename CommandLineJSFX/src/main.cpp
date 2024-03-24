@@ -23,6 +23,8 @@ int main(int argc, char** argv)
     CLI11_PARSE(app, argc, argv);
 
     if (filter_process_cmd->parsed()) {
+        using namespace dsp::floatingPoint;
+
         FilterCoeffs coeffs;
 
         pugi::xml_document doc;
@@ -45,6 +47,8 @@ int main(int argc, char** argv)
         for (pugi::xml_node coeff : root.child("b_k").children("coeff")) {
             coeffs.b_k.push_back(coeff.text().as_float());
         }
+        
+        FIRFilter filter(std::move(coeffs.b_k));
         
     }
 

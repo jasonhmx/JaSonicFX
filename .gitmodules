@@ -1,3 +1,6 @@
 [submodule "extern/pugixml"]
 	path = extern/pugixml
 	url = https://github.com/zeux/pugixml.git
+[submodule "extern/AudioFile"]
+	path = extern/AudioFile
+	url = https://github.com/adamstark/AudioFile.git

@@ -9,3 +9,8 @@ target_include_directories(
     lib_jsfx PUBLIC
     ./include
 )
+
+target_link_libraries(
+    lib_jsfx PUBLIC
+    AudioFile
+)

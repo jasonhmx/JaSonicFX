@@ -50,6 +50,13 @@ namespace dsp::floatingPoint
          */
         void reset();
 
+        /**
+         * @brief Returns the length of the filter in samples
+         *
+         * @return int
+         */
+        int size();
+
     private:
         std::vector<FloatType> filterCoeffs;
         std::vector<FloatType> buffer; // power of 2 size, uses double buffer FIR optimisation

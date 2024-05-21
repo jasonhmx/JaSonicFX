@@ -67,5 +67,11 @@ void FIRFilter<FloatType>::reset()
     numRemainingSamples = numCoeffs - 1;
 }
 
+template <std::floating_point FloatType>
+int dsp::floatingPoint::FIRFilter<FloatType>::size()
+{
+    return numCoeffs;
+}
+
 template class dsp::floatingPoint::FIRFilter<float>;
 template class dsp::floatingPoint::FIRFilter<double>;

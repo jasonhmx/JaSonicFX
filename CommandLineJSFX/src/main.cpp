@@ -1,8 +1,7 @@
 #include "CLI11.hpp"
 #include "FIRFilter.h"
 #include "pugixml.hpp"
-#include "iostream"
-#include "fstream"
+#include "AudioFile.h"
 
 struct FilterCoeffs {
     std::vector<float> a_k;
@@ -39,8 +38,8 @@ int main(int argc, char** argv)
         int sample_rate = root.attribute("sample_rate").as_int();
         int num_samples = root.attribute("num_samples").as_int();
 
-        std::cout << "Sample Rate: " << sample_rate << std::endl;
-        std::cout << "Number of Samples: " << num_samples << std::endl;
+        std::cout << "Coeffs sample Rate: " << sample_rate << std::endl;
+        std::cout << "Coeffs number of Samples: " << num_samples << std::endl;
         coeffs.b_k.reserve(num_samples);
 
         // Parsing coefficients from XML
@@ -49,7 +48,34 @@ int main(int argc, char** argv)
         }
         
         FIRFilter filter(std::move(coeffs.b_k));
-        
+
+        // Load input wav file
+        AudioFile<float> inputAudioFile;
+        inputAudioFile.load(ifpath);
+        auto &inputBuffer = inputAudioFile.samples;
+
+        // Filter input wav file
+        AudioFile<float>::AudioBuffer outputBuffer;
+        outputBuffer.resize(inputBuffer.size());
+        for (auto &i : outputBuffer)
+        {
+            i.resize(inputBuffer[0].size() + filter.size() - 1, 0);
+        }
+        for (int i = 0; i < inputBuffer.size(); i++)
+        {
+            filter.process(inputBuffer[i], outputBuffer[i]);
+            filter.flush(filter.size() - 1, {outputBuffer[i].begin() + inputBuffer[0].size(), outputBuffer[i].end()});
+        }
+
+        // Write result to output wav file
+        AudioFile<float> outputAudioFile;
+        if (outputAudioFile.setAudioBuffer(outputBuffer))
+        {
+            std::cout << "Output buffer set successfully!" << "\n";
+        }
+        outputAudioFile.setBitDepth(16);
+        outputAudioFile.setSampleRate(inputAudioFile.getSampleRate());
+        outputAudioFile.save(ofpath);
     }
 
     return 0;
